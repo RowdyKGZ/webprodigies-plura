@@ -6,8 +6,10 @@ import {
   getNotificationAndUser,
   verifyAndAcceptInvitation,
 } from "@/lib/queries";
-import Unauthorized from "@/components/unauthorized";
 import Sidebar from "@/components/sidebar";
+import Unauthorized from "@/components/unauthorized";
+import BlurPage from "@/components/global/blur-page";
+import { Infobar } from "@/components/global/infobar";
 
 type Props = {
   children: React.ReactNode;
@@ -34,14 +36,19 @@ const layout = async ({ children, params }: Props) => {
   let allNoti: any = [];
 
   const notification = await getNotificationAndUser(agencyId);
-  if (!notification) {
+  if (notification) {
     allNoti = notification;
   }
 
   return (
     <div className="h-screen overflow-hidden">
       <Sidebar id={params.agencyId} type="agency" />
-      <div className="md:pl-[300px]">{children}</div>
+      <div className="md:pl-[300px]">
+        <Infobar notifications={allNoti} />
+        <div className="relative">
+          <BlurPage>{children}</BlurPage>
+        </div>
+      </div>
     </div>
   );
 };
