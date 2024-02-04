@@ -128,7 +128,7 @@ export const AgencyDetails = ({ data }: Props) => {
       newUserData = await initUser({ role: "AGENCY_OWNER" });
 
       if (!data?.customerId) {
-        const response = await upsertAgency({
+        await upsertAgency({
           id: data?.id ? data.id : v4(),
           customerId: data?.customerId || "",
           address: values.address,
@@ -152,9 +152,8 @@ export const AgencyDetails = ({ data }: Props) => {
         });
 
         if (data?.id) return router.refresh();
-        if (response) {
-          return router.refresh();
-        }
+
+        return router.refresh();
       }
     } catch (error) {
       toast({
