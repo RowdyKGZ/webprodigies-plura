@@ -264,15 +264,15 @@ export const createTeamUser = async (agencyId: string, user: User) => {
 
 export const upsertSubAccount = async (subAccount: SubAccount) => {
   if (!subAccount.companyEmail) return null;
-
   const agencyOwner = await db.user.findFirst({
-    where: { Agency: { id: subAccount.id }, role: "AGENCY_OWNER" },
+    where: {
+      Agency: {
+        id: subAccount.agencyId,
+      },
+      role: "AGENCY_OWNER",
+    },
   });
-
-  if (!agencyOwner) {
-    return console.log("🌋Error could not created subaccount");
-  }
-
+  if (!agencyOwner) return console.log("🔴Erorr could not create subaccount");
   const permissionId = v4();
   const response = await db.subAccount.upsert({
     where: { id: subAccount.id },
@@ -280,10 +280,19 @@ export const upsertSubAccount = async (subAccount: SubAccount) => {
     create: {
       ...subAccount,
       Permissions: {
-        create: { access: true, email: agencyOwner.email, id: permissionId },
-        connect: { subAccountId: subAccount.id, id: permissionId },
+        create: {
+          access: true,
+          email: agencyOwner.email,
+          id: permissionId,
+        },
+        connect: {
+          subAccountId: subAccount.id,
+          id: permissionId,
+        },
       },
-      Pipeline: { create: { name: "Lead Cycle" } },
+      Pipeline: {
+        create: { name: "Lead Cycle" },
+      },
       SidebarOption: {
         create: [
           {
@@ -330,7 +339,6 @@ export const upsertSubAccount = async (subAccount: SubAccount) => {
       },
     },
   });
-
   return response;
 };
 
@@ -397,4 +405,25 @@ export const deleteSubAccount = async (subaccountId: string) => {
     },
   });
   return response;
+};
+
+export const deleteUser = async (userId: string) => {
+  await clerkClient.users.updateUserMetadata(userId, {
+    privateMetadata: {
+      role: undefined,
+    },
+  });
+  const deletedUser = await db.user.delete({ where: { id: userId } });
+
+  return deletedUser;
+};
+
+export const getUser = async (id: string) => {
+  const user = await db.user.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return user;
 };

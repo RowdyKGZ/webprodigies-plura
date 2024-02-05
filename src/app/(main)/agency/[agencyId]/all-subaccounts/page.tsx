@@ -1,10 +1,3 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { SubAccount } from "@prisma/client";
-
-import { Button } from "@/components/ui/button";
-import { getAuthUserDetails } from "@/lib/queries";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +9,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -24,30 +18,39 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { getAuthUserDetails } from "@/lib/queries";
+import { SubAccount } from "@prisma/client";
+import Image from "next/image";
+import Link from "next/link";
 
+import React from "react";
 import { DeleteButton } from "./_components/delete-button";
+import { CreateSubaccountBtn } from "./_components/create-subaccount-btn";
 
 type Props = {
   params: { agencyId: string };
 };
 
-const allSubaccountsPage = async ({ params }: Props) => {
+const AllSubaccountsPage = async ({ params }: Props) => {
   const user = await getAuthUserDetails();
   if (!user) return;
 
   return (
     <AlertDialog>
-      <div className="flex flex-col">
-        <Button>Create</Button>
+      <div className="flex flex-col ">
+        <CreateSubaccountBtn
+          user={user}
+          id={params.agencyId}
+          className="w-[200px] self-end m-6"
+        />
+
         <Command className="rounded-lg bg-transparent">
           <CommandInput placeholder="Search Account..." />
-
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-
-            <CommandGroup heading="Sub accounts">
+            <CommandEmpty>No Results Found.</CommandEmpty>
+            <CommandGroup heading="Sub Accounts">
               {!!user.Agency?.SubAccount.length ? (
-                user.Agency?.SubAccount.map((subaccount: SubAccount) => (
+                user.Agency.SubAccount.map((subaccount: SubAccount) => (
                   <CommandItem
                     key={subaccount.id}
                     className="h-32 !bg-background my-2 text-primary border-[1px] border-border p-4 rounded-lg hover:!bg-background cursor-pointer transition-all"
@@ -56,15 +59,14 @@ const allSubaccountsPage = async ({ params }: Props) => {
                       href={`/subaccount/${subaccount.id}`}
                       className="flex gap-4 w-full h-full"
                     >
-                      <div className="relative">
+                      <div className="relative w-32">
                         <Image
                           src={subaccount.subAccountLogo}
-                          alt="Subaccount logo"
+                          alt="subaccount logo"
                           fill
                           className="rounded-md object-contain bg-muted/50 p-4"
                         />
                       </div>
-
                       <div className="flex flex-col justify-between">
                         <div className="flex flex-col">
                           {subaccount.name}
@@ -74,28 +76,25 @@ const allSubaccountsPage = async ({ params }: Props) => {
                         </div>
                       </div>
                     </Link>
-
                     <AlertDialogTrigger asChild>
                       <Button
-                        size="sm"
-                        variant="destructive"
-                        className="text-red-600 w-20 hover:bg-red-600 hover:text-white"
+                        size={"sm"}
+                        variant={"destructive"}
+                        className="w-20 hover:bg-red-600 hover:text-white !text-white"
                       >
                         Delete
                       </Button>
                     </AlertDialogTrigger>
-
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle className="text-left">
-                          Are you absolutly shure ?
+                          Are your absolutely sure
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-left">
-                          This action cannout be undon. This will delete the
-                          subaccount and all data related to the subaccount
+                          This action cannot be undon. This will delete the
+                          subaccount and all data related to the subaccount.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
-
                       <AlertDialogFooter className="flex items-center">
                         <AlertDialogCancel className="mb-2">
                           Cancel
@@ -109,7 +108,7 @@ const allSubaccountsPage = async ({ params }: Props) => {
                 ))
               ) : (
                 <div className="text-muted-foreground text-center p-4">
-                  No subaccounts
+                  No Sub accounts
                 </div>
               )}
             </CommandGroup>
@@ -120,4 +119,4 @@ const allSubaccountsPage = async ({ params }: Props) => {
   );
 };
 
-export default allSubaccountsPage;
+export default AllSubaccountsPage;

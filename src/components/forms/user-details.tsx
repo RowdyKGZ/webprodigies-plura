@@ -57,7 +57,7 @@ type Props = {
   id: string | null;
   type: "agency" | "subaccount";
   userData?: Partial<User>;
-  subAccounts: SubAccount[];
+  subAccounts?: SubAccount[];
 };
 
 export const UserDetails = ({ id, subAccounts, type, userData }: Props) => {
@@ -352,7 +352,7 @@ export const UserDetails = ({ id, subAccounts, type, userData }: Props) => {
                   agency owners
                 </FormDescription>
                 <div className="flex flex-col gap-4">
-                  {subAccounts.map((subaccount) => {
+                  {subAccounts?.map((subaccount) => {
                     const subAccountPermissionsDetails =
                       subAccountPermissions?.Permissions.find(
                         (p) => p.subAccountId === subaccount.id
@@ -360,7 +360,7 @@ export const UserDetails = ({ id, subAccounts, type, userData }: Props) => {
                     return (
                       <div
                         key={subaccount.id}
-                        className="flex flex-col items-center rounded-lg border p-4"
+                        className="flex items-center rounded-lg border p-4"
                       >
                         <div>
                           <p>{subaccount.name}</p>
