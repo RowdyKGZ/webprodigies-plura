@@ -4,17 +4,22 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { LaneDetail } from "@/lib/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getLanesWithTicketAndTags, getPipelineDetails } from "@/lib/queries";
+import {
+  getLanesWithTicketAndTags,
+  getPipelineDetails,
+  updateLanesOrder,
+  updateTicketsOrder,
+} from "@/lib/queries";
 
 import { PipelineInfobar } from "../_components/pipeline-infobar";
+import PipelineSettings from "../_components/pipeline-settings";
+import { PipelineView } from "../_components/pipeline-view";
 
 type Props = {
   params: { subaccountId: string; pipelinesId: string };
 };
 
 const PipelinePage = async ({ params }: Props) => {
-  console.log(params, "Params");
-
   const pipelineDetails = await getPipelineDetails(params.pipelinesId);
   if (!pipelineDetails)
     return redirect(`/subaccount/${params.subaccountId}/pipelines`);
@@ -40,6 +45,24 @@ const PipelinePage = async ({ params }: Props) => {
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </div>
       </TabsList>
+
+      <TabsContent value="view">
+        <PipelineView
+          lanes={lanes}
+          pipelineDetails={pipelineDetails}
+          pipelineId={params.pipelinesId}
+          subaccountId={params.subaccountId}
+          updateLanesOrder={updateLanesOrder}
+          updateTicketsOrder={updateTicketsOrder}
+        />
+      </TabsContent>
+      <TabsContent value="settings">
+        <PipelineSettings
+          pipelineId={params.pipelinesId}
+          pipelines={pipelines}
+          subaccountId={params.subaccountId}
+        />
+      </TabsContent>
     </Tabs>
   );
 };
