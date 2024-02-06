@@ -1,11 +1,12 @@
 "use server";
 
-import { Agency, Plan, Role, SubAccount, User } from "@prisma/client";
+import { v4 } from "uuid";
 import { redirect } from "next/navigation";
 import { clerkClient, currentUser } from "@clerk/nextjs";
+import { Agency, Plan, Role, SubAccount, User } from "@prisma/client";
 
 import { db } from "./db";
-import { v4 } from "uuid";
+import { CreateMediaType } from "./types";
 
 export const saveActivityLogsNotification = async ({
   agencyId,
@@ -452,4 +453,37 @@ export const sendInvitation = async (
   }
 
   return resposne;
+};
+
+export const getMedia = async (subaccountId: string) => {
+  const mediaFiles = await db.subAccount.findUnique({
+    where: { id: subaccountId },
+    include: { Media: true },
+  });
+
+  return mediaFiles;
+};
+
+export const createMedia = async (
+  subaccountId: string,
+  mediaFile: CreateMediaType
+) => {
+  const response = await db.media.create({
+    data: {
+      link: mediaFile.link,
+      name: mediaFile.name,
+      subAccountId: subaccountId,
+    },
+  });
+
+  return response;
+};
+
+export const deleteMedia = async (mediaId: string) => {
+  const response = await db.media.delete({
+    where: {
+      id: mediaId,
+    },
+  });
+  return response;
 };

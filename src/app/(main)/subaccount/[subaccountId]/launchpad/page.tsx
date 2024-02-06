@@ -65,8 +65,8 @@ const LaunchpadPage = async ({ params, searchParams }: Props) => {
                   <Image
                     src="/stripelogo.png"
                     alt="App logo"
-                    height={100}
-                    width={100}
+                    height={80}
+                    width={80}
                     className="rounded-md object-contain "
                   />
                   <p>
@@ -80,8 +80,8 @@ const LaunchpadPage = async ({ params, searchParams }: Props) => {
                   <Image
                     src={subaccountDetails.subAccountLogo}
                     alt="App logo"
-                    height={80}
-                    width={80}
+                    height={110}
+                    width={110}
                     className="rounded-md object-contain p-4"
                   />
                   <p>Fill in all your business details.</p>
