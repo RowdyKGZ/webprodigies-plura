@@ -1,20 +1,15 @@
 "use client";
-import {
-  getSubAccountTeamMembers,
-  saveActivityLogsNotification,
-  searchContacts,
-  upsertTicket,
-} from "@/lib/queries";
-import { TicketFormSchema, TicketWithTags } from "@/lib/types";
-import { useModal } from "@/app/providers/modal-provider";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Contact, Tag, User } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+
 import { z } from "zod";
-import { toast } from "../ui/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { Contact, Tag, User } from "@prisma/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useRef, useState } from "react";
+
+import { cn } from "@/lib/utils";
+import { useModal } from "@/app/providers/modal-provider";
+import { TicketFormSchema, TicketWithTags } from "@/lib/types";
 import {
   Form,
   FormControl,
@@ -35,6 +30,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  getSubAccountTeamMembers,
+  saveActivityLogsNotification,
+  searchContacts,
+  upsertTicket,
+} from "@/lib/queries";
+
+import { toast } from "../ui/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { CheckIcon, ChevronsUpDownIcon, User2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -46,7 +50,6 @@ import {
   CommandInput,
   CommandItem,
 } from "../ui/command";
-import { cn } from "@/lib/utils";
 import Loading from "../global/loading";
 import TagCreator from "../global/tag-creator";
 
@@ -101,8 +104,7 @@ const TicketForm = ({ getNewTicket, laneId, subaccountId }: Props) => {
 
       const fetchData = async () => {
         const response = await searchContacts(
-          //@ts-ignore
-          defaultData.ticket?.Customer?.name
+          defaultData.ticket?.Customer?.name as string
         );
         setContactList(response);
       };

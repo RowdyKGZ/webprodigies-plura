@@ -1,6 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
+
+import { v4 } from "uuid";
 import { z } from "zod";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Form,
   FormControl,
@@ -17,23 +22,20 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
 import { Funnel, Pipeline } from "@prisma/client";
-import { Input } from "../ui/input";
-
-import { Button } from "../ui/button";
-import Loading from "../global/loading";
 import { CreatePipelineFormSchema } from "@/lib/types";
+import { useModal } from "@/app/providers/modal-provider";
 import {
   saveActivityLogsNotification,
   upsertFunnel,
   upsertPipeline,
 } from "@/lib/queries";
-import { v4 } from "uuid";
+
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import Loading from "../global/loading";
 import { toast } from "../ui/use-toast";
-import { useModal } from "@/app/providers/modal-provider";
 import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 interface CreatePipelineFormProps {
   defaultData?: Pipeline;
