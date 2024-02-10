@@ -38,29 +38,35 @@ const LaunchpadPage = async ({ params, searchParams }: Props) => {
     subaccountDetails.state;
 
   const stripeOAuthLink = getStripeOAuthLink(
-    "agency",
+    "subaccount",
     `launchpad___${subaccountDetails.id}`
   );
 
   let connectedStripeAccount = false;
 
+  console.log(searchParams.code);
+
   if (searchParams.code) {
+    console.log("AAAaA");
+
     if (!subaccountDetails.connectAccountId) {
       try {
         const response = await stripe.oauth.token({
           grant_type: "authorization_code",
           code: searchParams.code,
         });
-        await db.agency.update({
+        await db.subAccount.update({
           where: { id: params.subaccountId },
           data: { connectAccountId: response.stripe_user_id },
         });
         connectedStripeAccount = true;
       } catch (error) {
-        console.log("🔴 Could not connect stripe account");
+        console.log("🔴 Could not connect stripe account", error);
       }
     }
   }
+
+  console.log(subaccountDetails.connectAccountId);
 
   return (
     <BlurPage>
