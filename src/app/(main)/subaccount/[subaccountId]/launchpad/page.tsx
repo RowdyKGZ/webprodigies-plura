@@ -13,6 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { db } from "@/lib/db";
+import { getStripeOAuthLink } from "@/lib/utils";
+import { stripe } from "@/lib/stripe";
 
 type Props = {
   params: { subaccountId: string };
@@ -35,6 +37,31 @@ const LaunchpadPage = async ({ params, searchParams }: Props) => {
     subaccountDetails.name &&
     subaccountDetails.state;
 
+  const stripeOAuthLink = getStripeOAuthLink(
+    "agency",
+    `launchpad___${subaccountDetails.id}`
+  );
+
+  let connectedStripeAccount = false;
+
+  if (searchParams.code) {
+    if (!subaccountDetails.connectAccountId) {
+      try {
+        const response = await stripe.oauth.token({
+          grant_type: "authorization_code",
+          code: searchParams.code,
+        });
+        await db.agency.update({
+          where: { id: params.subaccountId },
+          data: { connectAccountId: response.stripe_user_id },
+        });
+        connectedStripeAccount = true;
+      } catch (error) {
+        console.log("🔴 Could not connect stripe account");
+      }
+    }
+  }
+
   return (
     <BlurPage>
       <div className="flex flex-col justify-center items-center">
@@ -46,6 +73,7 @@ const LaunchpadPage = async ({ params, searchParams }: Props) => {
                 Follow the steps below to get your account setup correctly.
               </CardDescription>
             </CardHeader>
+
             <CardContent className="flex flex-col gap-4">
               <div className="flex justify-between items-center w-full h-20 border p-4 rounded-lg ">
                 <div className="flex items-center gap-4">
@@ -60,6 +88,7 @@ const LaunchpadPage = async ({ params, searchParams }: Props) => {
                 </div>
                 <Button>Start</Button>
               </div>
+
               <div className="flex justify-between items-center w-full h-20 border p-4 rounded-lg">
                 <div className="flex items-center gap-4">
                   <Image
@@ -74,7 +103,23 @@ const LaunchpadPage = async ({ params, searchParams }: Props) => {
                     used to run payouts.
                   </p>
                 </div>
+
+                {subaccountDetails.connectAccountId ||
+                connectedStripeAccount ? (
+                  <CheckCircleIcon
+                    size={50}
+                    className=" text-primary p-2 flex-shrink-0"
+                  />
+                ) : (
+                  <Link
+                    className="bg-primary py-2 px-4 rounded-md text-white"
+                    href={stripeOAuthLink}
+                  >
+                    Start
+                  </Link>
+                )}
               </div>
+
               <div className="flex justify-between items-center w-full h-20 border p-4 rounded-lg">
                 <div className="flex items-center gap-4">
                   <Image
@@ -86,6 +131,7 @@ const LaunchpadPage = async ({ params, searchParams }: Props) => {
                   />
                   <p>Fill in all your business details.</p>
                 </div>
+
                 {allDetailsExist ? (
                   <CheckCircleIcon
                     size={50}
