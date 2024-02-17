@@ -1,3 +1,5 @@
+"use client";
+
 import { FunnelPage } from "@prisma/client";
 import React, { Dispatch, createContext, useContext, useReducer } from "react";
 

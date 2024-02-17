@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster as SonnerToater } from "sonner";
 
 import { Toaster } from "@/components/ui/toaster";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
           <ModalProvider>
             {children}
             <Toaster />
+            <SonnerToater position="bottom-left" />
           </ModalProvider>
         </ThemeProvider>
       </body>
