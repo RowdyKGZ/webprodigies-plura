@@ -8,13 +8,15 @@ import { useEditor } from "@/app/providers/editor/editor-provider";
 import { getFunnelPageDetails } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
 
+import { Recursive } from "./funnel-editor-components/recursive";
+
 type Props = {
   funnelPageId: string;
   liveMode?: boolean;
 };
 
 export const FunnelEditor = ({ funnelPageId, liveMode }: Props) => {
-  const { state, dispatch } = useEditor();
+  const { dispatch, state } = useEditor();
 
   useEffect(() => {
     if (liveMode) {
@@ -25,6 +27,7 @@ export const FunnelEditor = ({ funnelPageId, liveMode }: Props) => {
     }
   }, [liveMode]);
 
+  //CHALLENGE: make this more performant
   useEffect(() => {
     const fetchData = async () => {
       const response = await getFunnelPageDetails(funnelPageId);
@@ -52,7 +55,6 @@ export const FunnelEditor = ({ funnelPageId, liveMode }: Props) => {
     dispatch({ type: "TOGGLE_PREVIEW_MODE" });
     dispatch({ type: "TOGGLE_LIVE_MODE" });
   };
-
   return (
     <div
       className={clsx(
@@ -77,11 +79,10 @@ export const FunnelEditor = ({ funnelPageId, liveMode }: Props) => {
           <EyeOff />
         </Button>
       )}
-
-      {/* {Array.isArray(state.editor.elements) &&
+      {Array.isArray(state.editor.elements) &&
         state.editor.elements.map((childElement) => (
           <Recursive key={childElement.id} element={childElement} />
-        ))} */}
+        ))}
     </div>
   );
 };
